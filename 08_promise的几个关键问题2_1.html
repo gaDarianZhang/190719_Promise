@@ -28,7 +28,7 @@
         console.log('resolve()改变状态后')
         // reject()
       }, 1000)
-    }).then( // 先指定回调函数, 内部选将回调函数保存起来
+    }).then( // 先指定回调函数, 内部先将回调函数保存起来
       value => { // 成功/失败的回调函数是异步执行的, 需要放入队列将来执行
         console.log('onResolved()', value)
       }

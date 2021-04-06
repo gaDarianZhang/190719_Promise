@@ -26,18 +26,20 @@
 
     4. Promise.resolve方法: (value) => {}
         value: 成功的数据或promise对象
-        说明: 返回一个成功/失败的promise对象
+        说明: 返回一个成功/失败的promise对象。立即改变promise状态为resolved
 
     5. Promise.reject方法: (reason) => {}
         reason: 失败的原因
-        说明: 返回一个失败的promise对象
+        说明: 返回一个失败的promise对象。立即改变promise状态为rejected。
+        
 
     6. Promise.all方法: (promises) => {}
         promises: 包含n个promise的数组
-        说明: 返回一个新的promise, 只有所有的promise都成功才成功, 只要有一个失败了就直接失败
+        说明: 返回一个新的promise, 只有promises内所有的promise都成功才成功, 只要有一个失败了就直接失败。
+              所有promise成功的数据按照promises数据顺序保存在一个数据中。如果有一个失败则失败，这个失败的数据保存在reason中。
     7. Promise.race方法: (promises) => {}
         promises: 包含n个promise的数组
-        说明: 返回一个新的promise, 第一个完成的promise的结果状态就是最终的结果状态
+        说明: 返回一个新的promise, 第一个完成的promise的结果状态就是最终的结果状态。
   -->
 
   <script>

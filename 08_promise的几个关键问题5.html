@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>08_promise的几个关键问题5</title>
 </head>
+
 <body>
   <script>
     /* 
     6.promise错误穿透?
-      (1)当使用promise的then链式调用时, 可以在最后指定失败的回调, 
-      (2)前面任何操作出了错误, 都会传到最后失败的回调中处理
+      (1)当使用promise的then链式调用时, 可以在最后指定失败的回调,前面任何操作出了错误, 都会传到最后失败的回调中处理
     7.中断promise链?
       (1)当使用promise的then链式调用时, 在中间中断, 不再调用后面的回调函数
       (2)办法: 在回调函数中返回一个pendding状态的promise对象
@@ -25,7 +26,7 @@
       // reason => {throw reason}
     ).then(
       value => console.log('onResolved2()', value),
-     // reason => Promise.reject(reason)
+      // reason => Promise.reject(reason)
     ).then(
       value => console.log('onResolved3()', value),
       // reason => {throw reason}
@@ -38,6 +39,54 @@
       reason => console.log('onRejected2()', reason)
     )
 
+    // new Promise((resolve, reject) => {
+    //   // resolve(1)
+    //   reject(5)
+    // }).then(
+    //   value => {
+    //     console.log('onResolved1()', value)
+    //   },
+    //   // reason => {throw reason}
+    // ).then(
+    //   value => {
+    //     console.log('onResolved2()', value)
+    //   },
+    //   // ()=> new Promise(() => {})
+    // ).then(
+    //   value => {
+    //     console.log('onResolved3()', value)
+    //   },
+    //   reason => {
+    //     console.log("onRejected3()", reason);
+    //   }
+    // )
+
+    let p2 = new Promise((resolve, reject) => {
+      // resolve(1)
+      reject(5)
+    });
+    setTimeout(() => {
+      p2.then(
+        value => {
+          console.log('onResolved1()', value)
+        },
+        // reason => {throw reason}
+      ).then(
+        value => {
+          console.log('onResolved2()', value)
+        },
+        // reason => Promise.reject(reason)
+        // ()=> new Promise(() => {})
+      ).then(
+        value => {
+          console.log('onResolved3()', value)
+        },
+        reason => {
+          console.log("onRejected3()", reason);
+        }
+      )
+    }, 1000);
   </script>
 </body>
+
 </html>

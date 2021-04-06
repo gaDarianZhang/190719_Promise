@@ -31,7 +31,7 @@
       }
     
       /* 1.1 使用纯回调函数封装异步操作 */
-      createAudioFileAsync(audioSettings, successCallback, failureCallback) // 必须在异步任务启动指定回调函数
+      createAudioFileAsync(audioSettings, successCallback, failureCallback) // 必须在异步任务启动前指定回调函数
       
       /* 1.2. 使用Promise封装异步操作 */
       const promise = createAudioFileAsync(audioSettings); // 2

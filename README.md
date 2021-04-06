@@ -3,6 +3,7 @@
 ### 1.1. 函数对象与实例对象
     1. 函数对象: 将函数作为对象使用时, 简称为函数对象
     2. 实例对象: new 函数产生的对象, 简称为对象
+    点的左边是对象，括号左边是函数
 
 ### 1.2. 回调函数的分类
     1. 同步回调: 
@@ -26,11 +27,15 @@
         message属性: 错误相关信息
         stack属性: 函数调用栈记录信息
 
+- <span style="color:orange">即使在try或者catch中return，finally中的语句还是会执行的。</span>
+- <span style="color:orange">在try中，如果在抛出错误之前return的话，catch就不会执行了，因为还没到抛出错误就return了呀。</span>
+
 ## 2. Promise的理解和使用
 ### 2.1. Promise是什么?
     1.抽象表达: 
         Promise是一门新的技术(ES6规范)
-        Promise是JS中进行异步编程的新解决方案(旧的是谁?)
+        Promise是JS中进行异步编程的新解决方案(旧的是谁?)。
+        Promise之前我们使用的是纯回调函数进行异步编程。
     2.具体表达:
         从语法上来说: Promise是一个构造函数
         从功能上来说: promise对象用来封装一个异步操作并可以获取其成功/失败的结果值
@@ -45,22 +50,174 @@
     2. 支持链式调用, 可以解决回调地狱问题
 
 ### 2.3. 如何使用Promise?
-    1. 主要API
-        Promise构造函数: Promise (excutor) {}
-        Promise.prototype.then方法: (onResolved, onRejected) => {}
-        Promise.prototype.catch方法: (onRejected) => {}
-        Promise.resolve方法: (value) => {}
-        Promise.reject方法: (reason) => {}
-        Promise.all方法: (promises) => {}
-        Promise.race方法: (promises) => {}
-    2. 几个重要问题
-        如何改变promise的状态?
-        一个promise指定多个成功/失败回调函数, 都会调用吗?
-        promise.then()返回的新promise的结果状态由什么决定?
-        改变promise状态和指定回调函数谁先谁后?
-        promise如何串连多个操作任务?
-        promise错误穿透?
-        中断promise链
+#### 主要API
+
+```js
+Promise构造函数: Promise (excutor) {}
+Promise.prototype.then方法: (onResolved, onRejected) => {}
+Promise.prototype.catch方法: (onRejected) => {}
+Promise.resolve方法: (value) => {}
+Promise.reject方法: (reason) => {}
+Promise.all方法: (promises) => {}
+Promise.race方法: (promises) => {}
+```
+
+#### 几个重要问题
+
+- 如何改变promise的状态?
+
+    - 调用resolve或者reject函数。
+    - excutor中抛出异常，状态改变为rejected。
+
+- 一个promise指定多个成功/失败回调函数, 都会调用吗?
+
+    - 当promise改变为对应状态时都会调用
+
+    - ```js
+        p.then(
+            value => console.log('onResolved()', value),
+            reason => console.log('onRejected()', reason)
+        );
+        p.then(
+            value => console.log('onResolved2()', value),
+            reason => console.log('onRejected2()', reason)
+        )
+        ```
+
+- promise.then()返回的新promise的结果状态由什么决定?
+
+    - 简单表达: 由then()指定的回调函数执行的结果决定
+
+    - 详细表达:
+
+        1. 如果抛出异常, 新promise变为rejected, reason为抛出的异常
+        2. 如果返回的是非promise的任意值（包括没有返回值，也就是undefined;以及从reason中返回非promise的任意值）, 新promise变为resolved, value为返回的值
+        3. 如果返回的是另一个新promise, 此promise的结果就会成为新promise的结果 
+
+        ```js
+        return Promise.resolve(5)
+        return Promise.reject(5)
+        return new Promise((resolve, reject)=>{})
+        ```
+
+- 改变promise状态和指定回调函数谁先谁后?
+
+    - 都有可能, 正常情况下是先指定回调再改变状态, 但也可以先改状态再指定回调
+    - 如何先改状态再指定回调?
+        - 在执行器中直接调用resolve()/reject()
+        - 延迟更长时间才调用then()
+    - 什么时候才能得到数据?
+        - ①如果先指定的回调, 那当状态发生改变时, 回调函数就会调用, 得到数据
+        - ②如果先改变的状态, 那当指定回调时, 回调函数就会调用, 得到数据
+
+- promise如何串连多个操作任务?
+
+    - promise的then()返回一个新的promise,可以连成then()的链式调用
+
+    - 通过then的链式调用串连多个同步/异步任务，<span style="color:red">对于链式调用中的异步任务，必须是包裹在一个promise对象中并返回，否则的话，这个promise的结果就会丢了、</span> 
+
+    - ```js
+        new Promise((resolve, reject) => {
+              // 启动任务1(异步)
+              console.log('启动任务1(异步)')
+              setTimeout(() => {
+                resolve(1)
+              }, 1000)
+            }).then(value => {
+              console.log('任务1成功的value为', value)
+              // 执行任务2(同步)
+              console.log('执行任务2(同步)')
+              return 2
+            }).then(value => {
+              console.log('任务2成功的vlaue为', value)
+              // 执行任务3(异步)
+              return new Promise((resolve, reject) => {
+                console.log('调动任务3(异步)')
+                setTimeout(() => {
+                  resolve(3)
+                }, 1000);
+              })
+            }).then(value => {
+              console.log('任务3成功的value为: ', value)
+            })
+        ```
+
+- promise错误穿透
+
+    - 当使用promise的then链式调用时, 可以在最后指定失败的回调,前面任何操作出了错误, 都会传到最后失败的回调中处理。
+
+    - 也就是当没有指定失败的回调函数时，会默认添加了抛出reason的失败回调函数
+
+    - ```js
+        new Promise((resolve, reject) => {
+        	// resolve(1)
+        	reject(2)
+        }).then(
+            value => console.log('onResolved1()', value),
+            // reason => {throw reason}
+        ).then(
+            value => console.log('onResolved2()', value),
+            // reason => Promise.reject(reason)
+        ).then(
+            value => console.log('onResolved3()', value),
+            // reason => {throw reason}
+        ).catch(reason => {
+        	console.log('onRejected1()', reason)
+        })
+        ```
+
+- 中断promise链
+
+    - <span style="color:red">return一个pending的promise对象。</span>
+
+    - 如下代码的输出，先输出`onRejected3() 5`，再输出`onRejected1() 2`，是因为new队形和Promise对象内的执行函数`excutor`是同步执行的，后续的内容是异步执行的，那么就是先把两个构造函数及执行函数给执行了，然后一个接一个的回调。但是因为第一个链式回调的输出结果`onRejected1() 2`位于链中的第4位，所以就输出的晚一点了。
+
+    - ```js
+        new Promise((resolve, reject) => {
+          // resolve(1)
+          reject(2)
+        }).then(
+          value => console.log('onResolved1()', value),
+          // reason => {throw reason}
+        ).then(
+          value => console.log('onResolved2()', value),
+          // reason => Promise.reject(reason)
+        ).then(
+          value => console.log('onResolved3()', value),
+          // reason => {throw reason}
+        ).catch(reason => {
+          console.log('onRejected1()', reason)
+          // throw reason
+          return new Promise(() => {}) // 返回一个pending状态的promise ==> 中断promise链接  
+        }).then(
+          value => console.log('onResolved4()', value),
+          reason => console.log('onRejected2()', reason)
+        )
+        
+        new Promise((resolve, reject) => {
+          // resolve(1)
+          reject(5)
+        }).then(
+          value => {
+            console.log('onResolved1()', value)
+          },
+          // reason => {throw reason}
+        ).then(
+          value => {
+            console.log('onResolved2()', value)
+          },
+          // ()=> new Promise(() => {})
+        ).then(
+          value => {
+            console.log('onResolved3()', value)
+          },
+          reason => {
+            console.log("onRejected3()", reason);
+          }
+        )
+        ```
+
+        
 
 ## 3. 自定义Promise
     1. 定义整体结构
@@ -75,7 +232,7 @@
     1. async 函数
         函数的返回值为promise对象
         promise对象的结果由async函数执行的返回值决定
-   
+       
     2. await 表达式
         await右侧的表达式一般为promise对象, 但也可以是其它的值
         如果表达式是promise对象, await返回的是promise成功的值
