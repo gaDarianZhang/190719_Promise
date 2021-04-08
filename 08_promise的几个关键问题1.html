@@ -19,11 +19,12 @@
 
   <script>
     const p = new Promise((resolve, reject) => {
-      // resolve(1) // pending ==> resolved
+      resolve(1) // pending ==> resolved
       // reject(2) // pending ==> rejected
-      // throw 3 // 执行器中抛出异常  pending ==> rejected
+      throw 3 // 执行器中抛出异常  pending ==> rejected
       // resolve(1) // pending ==> resolved
       // reject(2) //没有任何作用
+      console.log("after resolve and throw");
     })
     
     p.then(

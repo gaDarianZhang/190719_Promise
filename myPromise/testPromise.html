@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>testPromise</title>
+</head>
+
+<body>
+  <script type="text/javascript" src="./Promise.js"></script>
+  
+  <script type="text/javascript">
+    let p1 = new Promise((resolve, reject) => {
+      setTimeout(()=>{
+        reject("reject1"); 
+        resolve("resolve1");
+        // resolve("resolve2");
+        // reject("reject1");
+        console.log("异步任务执行完成");
+      },1000);
+      // throw new Error("errorMessage");
+    });
+    setTimeout(()=>{
+      p1.then(
+      value=>{console.log("resolved()1:",value);},
+      reason=>{console.log("rejected()1:",reason);}
+    );
+    },2000)
+    // p1.then(
+    //   value=>{console.log("resolved()1:",value);},
+    //   reason=>{console.log("rejected()1:",reason);}
+    // );
+    for(var i = 0; i < 1000; i++){
+      console.log(i);
+    }
+    p1.then(
+      value=>{console.log("resolved()2:",value);},
+      reason=>{console.log("rejected()2:",reason);}
+    )
+  </script>
+</body>
+
+</html>

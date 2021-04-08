@@ -10,15 +10,15 @@
 <body>
     <!-- 
   1. 重要语法
-    Promise(excute)构造函数
+    Promise(execute)构造函数
     Promise.prototype.then方法
   2. 基本编码流程
-    1) 创建promise对象(pending状态), 指定执行器函数,执行器函数时同步的。
+    1) 创建promise对象(pending状态), 指定执行器函数,执行器函数是同步的。
     2) 在执行器函数中启动异步任务
     3) 根据结果做不同处理
         3.1) 如果成功了, 调用resolve(), 指定成功的value, 变为resolved状态
         3.2) 如果失败了, 调用reject(), 指定失败的reason, 变为rejected状态
-    4) 能promise指定成功或失败的回调函数来获取成功的vlaue或失败的reason
+    4) 用promise指定成功或失败的回调函数来获取成功的vlaue或失败的reason
   3. promise对象的状态
     1) 三个状态: 
         pending: 未确定的, 起始时的状态

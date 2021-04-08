@@ -1,93 +1,26 @@
-function f1() {
-  console.log(x,y);
+
+// let wait = ms=>new Promise((resolve,reject)=>{setTimeout(resolve,ms)});
+
+// wait(1000).then(value=>{console.log(value);console.log("resolved");console.log(obj);}).catch(reject=>{console.log(reject);});
+// console.log("after wait");
+
+// // setTimeout(()=>{console.log(obj);},1000);//出现错误无法处理
+
+// setTimeout(()=>{console.log("2second later");},2000);
+
+
+let p1 = Promise.resolve("p1:resolved");
+let p2 = Promise.reject("p2:rejected");
+let p3 = function (choice) {  
+  return new Promise((resolve,reject)=>choice=="resolved"?resolve("p3:"+choice):reject("p3"+choice));
 }
 
-function f2() {
-  let x=1,y=2;
-  f1(x,y);
-}
-// f2();
+// p3("resolved").then(value=>{console.log(value);});
 
+// Promise.all([p1,p3("resolved")]).then(value=>{console.log(value);},reason=>{console.log(reason);});
 
-try {
-  // return
-  throw new Error("err1");
+// [p1,p3("resolved")].reduce((p,f)=>p.then(()=>f),Promise.resolve("p0:resolved"));
+//在node中会报错：TypeError: Cannot read property 'reduce' of undefined。去html文件中测试把
+[()=>{console.log(1);},()=>{console.log(2);},()=>{console.log(3);}].reduce((acc,cur)=>acc.then(cur),Promise.resolve(0)).then(value=>{console.log(value);})
 
-} catch (error) {
-  console.log(error.message);
-  // return;
-} finally{
-  console.log("finally");
-}
-
-// function fun() {
-//   try {
-//     try {
-//       throw new Error("oops");
-//     }
-//     catch (ex) {
-//       console.error("inner", ex.message);
-//       throw ex;
-//     }
-//     finally {
-//       console.log("finally");
-//       return;
-//     }
-//   }
-//   catch (ex) {
-//     console.error("outer", ex.message);
-//   }
-  
-// }
-// console.log(fun());
-
-// let promise1 = new Promise((resolve,reject)=>{
-//   setTimeout(()=>{
-//     // console.log("setTimeout in promise");
-//     resolve("set message in resolve");
-//   },2000);
-//   resolve("set message in resolve");
-//   console.log("promise内的同步excutor回调函数");
-// });
-
-// promise1.then((value)=>{
-//   console.log(value);
-// },(reason)=>{
-//   console.log(reason);
-// });
-// console.log(promise1);
-
-// let p1 = new Promise((resolve,reject)=>{
-  
-//   throw "my error message";
-
-// });
-
-let timer1 = setTimeout(()=>{
-  console.log("timer1");
-},0);
-
-let p1 = new Promise((resolve,reject)=>{
-  
-  setTimeout(()=>{
-    reject("rejected")
-  },0)
-
-});
-
-p1.then(
-  value => {console.log("onResolved:",value);},
-  reason => {console.log("onRejected:",reason);}
-);
-
-/* output:
-  onRejected: my error message  */
-
-// function Person(name) {
-//   this.name = name;
-// }
-// Person.prototype.getThis = function () {
-//   console.log(this);
-// }
-// let person1 = new Person("张三");
-// person1.getThis()
+// console.log([1,2,3].reduce((acc,cur)=>acc+cur,4));
