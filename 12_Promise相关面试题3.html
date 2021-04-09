@@ -9,10 +9,10 @@
     <script>
       // 3 7 4 1 2 5
       /* 
-      宏: []
-      微: []
+      宏: [setTimeout]
+      微: [p.then  first().then]
       */
-      const first = () => (new Promise((resolve, reject) => {
+      const first = () => (new Promise((resolve, reject) => {//first函数返回一个promise对象
         console.log(3)
         let p = new Promise((resolve, reject) => {
           console.log(7)

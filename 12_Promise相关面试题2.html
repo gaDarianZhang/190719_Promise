@@ -13,9 +13,9 @@
       new Promise((resolve) => {
         console.log(2)
         resolve()
-      }).then(() => {
+      }).then(() => {//按顺序执行到这里时，就把这个then里边的回调放进微队列里边了。代码继续解析到下一个then
         console.log(3)
-      }).then(() => {
+      }).then(() => {//代码按顺序执行到这里时，前边的then的状态还没确定，所以是把这个then的回调放进一个数据里边待取出。还没放进微队列
         console.log(4)
       })
       console.log(5)

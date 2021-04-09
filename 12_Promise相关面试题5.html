@@ -9,8 +9,10 @@
   <script>
     async function async1() {
       console.log('async1 start')
-      await async2()  // async2().then(() => {})
+      await async2()  // async2().then(() => {}) async2返回一个成功为undefined的promise，下面一句作为then回调就加入微队列
       console.log('async1 end')
+      // await 1;
+      // console.log("async1 true end");//如果添加了这两句，那么这个await要等上边的await全部执行完才会执行。
     }
 
     async function async2() {
@@ -20,7 +22,7 @@
     console.log('script start')
 
     setTimeout(() => {
-      console.log('setTimeout')
+      console.log('setTimeout')   //A
     }, 0)
 
     async1()

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>10_async</title>
+</head>
+<body>
+<script type="text/javascript">
+  async function fn() {
+    return "async";
+  }
+
+  console.log(fn());
+  console.log(1);
+
+  // async function async1() {
+  //   let result = await new Promise((resolve,reject)=>{
+  //     setTimeout(()=>{
+  //       resolve("resolved after 1000");
+  //     },3000);
+  //     // resolve(123);
+  //   })
+  //   console.log(result);
+  //   console.log("last line");
+  // }
+  // async1();
+
+  // // 前边async转化成下边的形式
+
+  // function promiseFun(){
+  //   new Promise((resolve,reject)=>{
+  //     setTimeout(()=>{
+  //       resolve("promiseFun resolved");
+  //     },2000);
+  //   }).then(
+  //     value=>{
+  //       console.log(value);
+  //       console.log("last line");
+  //     }
+  //   )
+  // }
+  // promiseFun();
+
+//   async function async2() {
+//     let result = await 7;
+//     console.log(result);
+//     console.log("last line");
+//   }
+//   async2();
+// // 前边async转化成下边的形式
+//   function promiseFun2(){
+//     new Promise((resolve,reject)=>{
+//       resolve(7);
+//     }).then(
+//       value=>{
+//         console.log(value);
+//         console.log("last line");
+//       }
+//     )
+//   }
+//   promiseFun2();
+
+  // function throwErr() {  
+  //   throw "this is my throw message";
+  // }
+
+  // async function async3(){
+  //   try {
+  //     // let result = await new Promise((resolve,reject)=>{reject("reject!!rejected!!!")});
+  //     let result = await throwErr();
+  //     // let result = await new Promise((resolve,reject)=>{throw "big error"});
+  //     console.log(result);
+  //     console.log("你前边要报错知道吗");
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // async3();
+
+
+  async function async4() {
+    let result = await new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        resolve("resolved after 3000");
+      },3000);
+      // resolve(123);
+    })
+    console.log(result);
+    console.log("first await");
+    let result2 = await 7;
+    console.log(result2);
+    console.log("second await");
+    let result3 = await new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        resolve("third resolve after second 2000");
+      },2000);
+    });
+    console.log(result3);
+  }
+  async4();
+  console.log("go go go");
+</script>
+</body>
+</html>

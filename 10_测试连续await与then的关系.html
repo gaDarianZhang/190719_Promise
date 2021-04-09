@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>10_测试连续await与then的关系</title>
+</head>
+<body>
+<script type="text/javascript">
+
+
+//------------------------------------------No.1-----------------------------------------------
+  // let p1 = new Promise((resolve,reject)=>{
+  //   console.time("p1");
+  //   setTimeout(()=>{
+  //     console.log("promise1");
+  //     resolve("promise1:resolved");
+  //     console.log("promise1");
+  //   },2000);
+  // });
+
+  //then嵌套
+  // p1.then(
+  //   value=>{
+  //     console.log("p1-value1:"+value);
+  //     let p11 =  new Promise((resolve,reject)=>{
+  //       setTimeout(()=>{
+  //         console.log("promise11 in promise1");
+  //         resolve("promise11 in promise1:resolved");
+  //       },3000);
+  //     });
+  //     p11.then(value=>{console.log("p11-value1:"+value);console.timeEnd("p1");})
+  //   }
+  // )
+
+  //then链式
+  // p1
+  // .then(value=>{
+  //   console.log("p1-value1:"+value);
+  //   return new Promise((resolve,reject)=>{
+  //     setTimeout(()=>{
+  //       console.log("promise11 in promise1");
+  //       resolve("promise11 in promise1:resolved");
+  //     },3000);
+  //   });
+  // })
+  // .then(value=>{
+  //   console.log("p11-value1:"+value);console.timeEnd("p1");
+  // })
+
+  //async await版本
+  // async function async1() {
+  //   console.log("async1 start");
+  //   let result1 = await p1;
+  //   console.log("p1-value1:"+result1);
+  //   let result2 = await new Promise((resolve,reject)=>{
+  //     setTimeout(()=>{
+  //       console.log("promise11 in promise1");
+  //       resolve("promise11 in promise1:resolved");
+  //     },3000);
+  //   });
+  //   console.log("p11-value1:"+result2);
+  //   console.timeEnd("p1");
+  // }
+  // async1();
+
+
+//------------------------------------------No.2-----------------------------------------------
+
+  let p1 = new Promise((resolve,reject)=>{
+    console.time("p1");
+    console.log("promise1");
+    resolve("promise1:resolved");
+    console.log("promise1");
+  });
+
+  //then嵌套 promise1 promise1p1-value1:promise1:resolved 'promise11 in promise1' p11-value1:promise11 in promise1:resolved
+  // p1.then(
+  //   value=>{
+  //     console.log("p1-value1:"+value);
+  //     let p11 =  new Promise((resolve,reject)=>{
+  //       console.log("promise11 in promise1");
+  //       resolve("promise11 in promise1:resolved");
+  //     });
+  //     p11.then(value=>{console.log("p11-value1:"+value);console.timeEnd("p1");})
+  //   }
+  // )
+
+  //then链式 promise1 promise1 p1-value1:promise1:resolved 'promise11 in promise1' p11-value1:promise11 in promise1:resolved
+  // p1
+  // .then(value=>{
+  //   console.log("p1-value1:"+value);
+  //   return new Promise((resolve,reject)=>{
+  //     console.log("promise11 in promise1");
+  //     resolve("promise11 in promise1:resolved");
+  //   });
+  // })
+  // .then(value=>{
+  //   console.log("p11-value1:"+value);console.timeEnd("p1");
+  // })
+
+  //async await版本
+  async function async1() {
+    console.log("async1 start");
+    let result1 = await p1;
+    console.log("p1-value1:"+result1);
+    let result2 = await new Promise((resolve,reject)=>{
+      console.log("promise11 in promise1");
+      resolve("promise11 in promise1:resolved");
+    });
+    console.log("p11-value1:"+result2);
+    console.timeEnd("p1");
+  }
+  async1();
+
+
+
+
+  // function takeLongTime(n) {
+  //   return new Promise(resolve => {
+  //       setTimeout(() => resolve(n + 1000), n);
+  //   });
+  // }
+  // function step1(n) {
+  //     console.log(`step1 with ${n}`);
+  //     return takeLongTime(n);
+  // }
+  // function step2(m, n) {
+  //     console.log(`step2 with ${m} and ${n}`);
+  //     return takeLongTime(m + n);
+  // }
+  // function step3(k, m, n) {
+  //     console.log(`step3 with ${k}, ${m} and ${n}`);
+  //     return takeLongTime(k + m + n);
+  // }
+
+  // async function doIt() {
+  //     console.time("doIt");
+  //     const time1 = 1000;
+  //     const time2 = await step1(time1);
+  //     const time3 = await step2(time1, time2);
+  //     const result = await step3(time1, time2, time3);
+  //     console.log(`result is ${result}`);
+  //     console.timeEnd("doIt");
+  // }
+
+  // doIt();
+
+
+
+  // new Promise(function Promise1(resolve,reject){
+  //   console.log("promise1")
+  //     resolve()
+  // }).then(function Then1(){                             //thenA
+  //     console.log("then1")
+  //     new Promise(function Promise2(resolve,reject){
+  //         console.log("promise2")
+  //         resolve()
+  //     }).then(function Then11(){                        //thenF
+  //         console.log("then11")
+  //     }).then(function Then111(){                       //thenM
+  //         console.log("then111")
+  //     }).then(function Then1111(){                      //thenN
+  //         console.log("then1111")
+  //     })
+  // }).then(function Then12(){                           //thenB
+  //     console.log("then12")
+  // })
+
+  // new Promise(function Promise3(resolve,reject){
+  //     console.log("promise3")
+  //     resolve()
+  // }).then(function Then2(){                           //thenC
+  //     console.log("then2")
+  // }).then(function Then21(){                          //thenD
+  //     console.log("then21")
+  // }).then(function Then211(){                         //thenE
+  //     console.log("then211")
+  // })
+
+</script>
+</body>
+</html>
